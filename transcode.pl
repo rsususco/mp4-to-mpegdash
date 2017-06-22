@@ -18,7 +18,7 @@ sub create_multiple_bitrate_versions {
 	my ($filename) = @_;
 	my $lastVersion = '';
 	for my $_version (@{$versions}){
-		my $r = `time ffmpeg -i $filename -vf scale=$_version:-1:force_original_aspect_ratio=decrease -x264opts 'keyint=$config->{keyint}:min-keyint=$config->{keyint}:no-scenecut' -strict -2 -r $config->{framerate} $_version/$filename -y`;
+		my $r = `ffmpeg -i $filename -vf scale=$_version:-1:force_original_aspect_ratio=decrease -x264opts 'keyint=$config->{keyint}:min-keyint=$config->{keyint}:no-scenecut' -strict -2 -r $config->{framerate} $_version/$filename -y`;
 		$lastVersion = $_version;
 	}
 	my $r = `cp $lastVersion/$filename audio/$filename`;
@@ -27,9 +27,9 @@ sub create_multiple_bitrate_versions {
 sub create_multiple_segments {
 	my ($filename) = @_;
 	for my $_version (@{$versions}){
-		my $r = `cd $_version; time MP4Box -dash $config->{chunk} -frag $config->{chunk} -rap -frag-rap -profile $config->{profile} $filename#video; rm $filename; cd ..`;
+		my $r = `cd $_version;MP4Box -dash $config->{chunk} -frag $config->{chunk} -rap -frag-rap -profile $config->{profile} $filename#video; rm $filename; cd ..`;
 	}
-	my $r = `cd audio; time MP4Box -dash $config->{chunk} -frag $config->{chunk} -rap -frag-rap -profile $config->{profile} $filename#audio; rm $filename; cd ..`;
+	my $r = `cd audio; MP4Box -dash $config->{chunk} -frag $config->{chunk} -rap -frag-rap -profile $config->{profile} $filename#audio; rm $filename; cd ..`;
 }
 
 sub merge_manifests {
